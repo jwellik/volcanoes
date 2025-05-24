@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: volcanoes
+Version: 0.1.0
+Summary: A Python package for working with GVP volcano data
+Author: Your Name
+Author-email: jwellik@usgs.gov
+Requires-Python: >=3.7
+Requires-Dist: matplotlib>=3.0.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+A comprehensive package for loading, filtering, and analyzing volcano data from the Global Volcanism Program.
