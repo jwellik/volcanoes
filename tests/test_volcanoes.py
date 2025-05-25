@@ -85,9 +85,9 @@ for key, value in summary.items():
 # Example 10: Plotting (requires matplotlib)
 print("\n=== Example 10: Plotting ===")
 print("Plotting requires matplotlib. If installed, uncomment the lines below:")
-# italy_volcs.plot()  # Plot all Italian volcanoes
-# if len(etna) > 0:
-#     etna[0].plot()  # Plot Mount Etna individually
+italy_volcs.plot()  # Plot all Italian volcanoes
+if len(etna) > 0:
+    etna[0].plot()  # Plot Mount Etna individually
 
 print("\nAll examples completed!")
 
