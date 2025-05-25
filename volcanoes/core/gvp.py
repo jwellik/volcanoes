@@ -16,21 +16,24 @@ class GVP:
             csv_path: Path to the CSV file. If None, uses the default data file.
         """
 
-        # if csv_path is None:
-        #     # Default path relative to this file
-        #     package_dir = os.path.dirname(os.path.dirname(__file__))
-        #     csv_path = os.path.join(package_dir, 'data', 'volcanoes.csv')
+        if csv_path is None:
+            # Try to use importlib.resources first
+            try:
+                from importlib import resources
+                with resources.path('volcanoes.data', 'volcanoes.csv') as data_path:
+                    self.csv_path = str(data_path)
+            except ImportError:
+                # Fallback for older Python versions
+                package_dir = os.path.dirname(os.path.dirname(__file__))
+                self.csv_path = os.path.join(package_dir, 'data', 'volcanoes.csv')
+            except (ModuleNotFoundError, FileNotFoundError):
+                # Fallback if the data module doesn't exist
+                package_dir = os.path.dirname(os.path.dirname(__file__))
+                self.csv_path = os.path.join(package_dir, 'data', 'volcanoes.csv')
+        else:
+            # Use the provided path
+            self.csv_path = csv_path
 
-        try:
-            from importlib import resources
-            with resources.path('volcanoes.data', 'volcanoes.csv') as csv_path:
-                self.csv_path = str(csv_path)
-        except ImportError:
-            # Fallback for older Python versions
-            package_dir = os.path.dirname(os.path.dirname(__file__))
-            self.csv_path = os.path.join(package_dir, 'data', 'volcanoes.csv')
-
-        self.csv_path = csv_path
         self._volcanoes = None
         self._load_data()
 
