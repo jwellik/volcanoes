@@ -20,14 +20,17 @@ class GVP:
             # Try to use importlib.resources first
             try:
                 from importlib import resources
-                with resources.path('volcanoes.data', 'volcanoes.csv') as data_path:
-                    self.csv_path = str(data_path)
-            except ImportError:
-                # Fallback for older Python versions
-                package_dir = os.path.dirname(os.path.dirname(__file__))
-                self.csv_path = os.path.join(package_dir, 'data', 'volcanoes.csv')
-            except (ModuleNotFoundError, FileNotFoundError):
-                # Fallback if the data module doesn't exist
+                # Use the newer files() method instead of deprecated path()
+                if hasattr(resources, 'files'):
+                    # Python 3.9+
+                    files = resources.files('volcanoes.data')
+                    self.csv_path = str(files / 'volcanoes.csv')
+                else:
+                    # Fallback for Python 3.8 and earlier
+                    with resources.path('volcanoes.data', 'volcanoes.csv') as data_path:
+                        self.csv_path = str(data_path)
+            except (ImportError, ModuleNotFoundError, FileNotFoundError):
+                # Fallback if the data module doesn't exist or resources unavailable
                 package_dir = os.path.dirname(os.path.dirname(__file__))
                 self.csv_path = os.path.join(package_dir, 'data', 'volcanoes.csv')
         else:
@@ -44,11 +47,22 @@ class GVP:
         try:
             with open(self.csv_path, 'r', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
-                for row in reader:
-                    # Clean up whitespace in all fields
-                    cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v
-                                   for k, v in row.items()}
-                    volcanoes.append(Volcano(cleaned_row))
+
+                # Check if we have the expected columns
+                if reader.fieldnames:
+                    print(f"CSV columns found: {reader.fieldnames}")
+
+                for i, row in enumerate(reader):
+                    try:
+                        # Clean up whitespace in all fields
+                        cleaned_row = {k.strip(): v.strip() if isinstance(v, str) else v
+                                       for k, v in row.items() if k is not None}
+                        volcanoes.append(Volcano(cleaned_row))
+                    except Exception as e:
+                        print(f"Error processing row {i + 1}: {e}")
+                        print(f"Row data: {row}")
+                        # Continue processing other rows
+                        continue
 
             self._volcanoes = volcanoes
             print(f"Loaded {len(volcanoes)} volcanoes from {self.csv_path}")
@@ -56,9 +70,12 @@ class GVP:
         except FileNotFoundError:
             print(f"CSV file not found: {self.csv_path}")
             print("Please ensure the volcanoes.csv file is in the correct location.")
+            print(f"Current working directory: {os.getcwd()}")
+            print(f"Looking for file at: {os.path.abspath(self.csv_path)}")
             self._volcanoes = []
         except Exception as e:
             print(f"Error loading data: {e}")
+            print(f"File path: {self.csv_path}")
             self._volcanoes = []
 
     @property
@@ -71,6 +88,7 @@ class GVP:
                          name: Optional[str] = None,
                          id: Optional[int] = None,
                          volcano_type: Optional[str] = None,
+                         geologic_epoch: Optional[str] = None,
                          latitude: Optional[float] = None,
                          longitude: Optional[float] = None,
                          radius_km: Optional[float] = None,
@@ -109,6 +127,10 @@ class GVP:
         # Filter by volcano type
         if volcano_type:
             filtered = [v for v in filtered if volcano_type.lower() in v.volcano_type.lower()]
+
+        # Filter by geologic epoch
+        if geologic_epoch:
+            filtered = [v for v in filtered if geologic_epoch.lower() in v.geologic_epoch.lower()]
 
         # Filter by elevation range
         if min_elevation is not None or max_elevation is not None:
