@@ -136,7 +136,7 @@ class GVP:
         if min_elevation is not None or max_elevation is not None:
             new_filtered = []
             for v in filtered:
-                elev = v.elevation()
+                elev = v.get_elevation()
                 if elev is not None:
                     if min_elevation is not None and elev < min_elevation:
                         continue

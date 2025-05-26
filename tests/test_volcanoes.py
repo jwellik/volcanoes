@@ -28,8 +28,8 @@ if len(volcs) > 0:
     print(f"First volcano: {volc0}")
     print(f"Origin: {volc0.origin}")
     print(f"Latitude: {volc0.lat}")
-    print(f"Elevation (m): {volc0.elevation()}")
-    print(f"Elevation (ft): {volc0.elevation(units='ft')}")
+    print(f"Elevation (m): {volc0.get_elevation()}")
+    print(f"Elevation (ft): {volc0.get_elevation(units='ft')}")
     print(f"Last eruption: {volc0.last_eruption_year}")
 
 # Example 4: Filter by name

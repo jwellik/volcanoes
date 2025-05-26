@@ -43,7 +43,7 @@ class VolcanoSet:
         """Filter volcanoes by elevation range."""
         filtered = []
         for v in self._volcanoes:
-            elev = v.elevation()
+            elev = v.get_elevation()
             if elev is not None and min_elev <= elev <= max_elev:
                 filtered.append(v)
         return VolcanoSet(filtered)
@@ -66,11 +66,13 @@ class VolcanoSet:
         print("-" * 80)
 
         for i, volcano in enumerate(volcs_to_print):
-            elev_str = f"{volcano.elevation():.0f}m" if volcano.elevation() else "Unknown"
+            elev_str = f"{volcano.get_elevation() :4.0f}m" if volcano.get_elevation() else "----m"
+            origin_str = f"{volcano.lat:>+6.3f}, {volcano.lon:>+7.3f}, {elev_str}"
+            elev_str = f"{volcano.get_elevation() :.0f}m" if volcano.get_elevation() else "Unknown"
             last_eruption = f"{int(volcano.last_eruption_year)}" if volcano.last_eruption_year else "Unknown"
 
             print(f"{i + 1:3d}. {volcano.name:<30} | {volcano.country:<15} | "
-                  f"Elev: {elev_str:<8} | Last: {last_eruption}")
+                  f"{origin_str:>22} | Last: {last_eruption}")
 
         if limit and len(self._volcanoes) > limit:
             print(f"... and {len(self._volcanoes) - limit} more")
@@ -126,7 +128,7 @@ class VolcanoSet:
 
     def summary_stats(self) -> dict:
         """Get summary statistics for the volcano set."""
-        elevations = [v.elevation() for v in self._volcanoes if v.elevation() is not None]
+        elevations = [v.get_elevation() for v in self._volcanoes if v.get_elevation() is not None]
         countries = [v.country for v in self._volcanoes]
         types = [v.volcano_type for v in self._volcanoes]
 

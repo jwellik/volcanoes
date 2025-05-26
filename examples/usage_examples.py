@@ -56,8 +56,8 @@ def main():
         print(f"Origin (lat, lon, elev): {volcano.origin}")
         print(f"Latitude: {volcano.lat}")
         print(f"Longitude: {volcano.lon}")
-        print(f"Elevation (m): {volcano.elevation()}")
-        print(f"Elevation (ft): {volcano.elevation(units='ft')}")
+        print(f"Elevation (m): {volcano.get_elevation()}")
+        print(f"Elevation (ft): {volcano.get_elevation(units='ft')}")
         print(f"Last eruption: {volcano.last_eruption_year}")
         print(f"Volcano type: {volcano.volcano_type}")
         print(f"Country: {volcano.country}")
@@ -70,6 +70,8 @@ def main():
     etna_results = gvp.filter_volcanoes(name="Etna")
     print(f"Found {len(etna_results)} volcanoes with 'Etna' in name")
     etna_results.print()
+    etna_results[0].print()
+
 
     # Example 6: Filter by volcano ID
     print("\n" + "=" * 50)
@@ -81,6 +83,7 @@ def main():
     if specific_volcano:
         print(f"Found volcano: {specific_volcano}")
         print(f"Details: {specific_volcano.geological_summary[:200]}...")
+        # print(f"Geologic Epoch: {specific_volcano.geologic_epoch}")
     else:
         print("Volcano ID 211060 not found in database")
 
@@ -92,10 +95,10 @@ def main():
     # Find tall stratovolcanoes in Italy
     tall_stratovolcanoes = gvp.filter_volcanoes(
         volcano_type="Stratovolcano",
-        min_elevation=1000,
-        country="Italy"
+        min_elevation=3000,
+        country="Indonesia"
     )
-    print(f"Italian stratovolcanoes above 1000m: {len(tall_stratovolcanoes)}")
+    print(f"Indonesian stratovolcanoes above 3000m: {len(tall_stratovolcanoes)}")
     tall_stratovolcanoes.print()
 
     # Example 8: Elevation-based filtering
@@ -159,14 +162,14 @@ def main():
 
     # Show countries with most volcanoes
     country_counts = []
-    for country in countries[:20]:  # Check first 20 countries
-        count = len(gvp.filter_volcanoes(country=country))
+    for country in countries[:]:  # Check first n countries
+        count = len(gvp.filter_volcanoes(country=country, geologic_epoch="Holocene"))
         country_counts.append((country, count))
 
     # Sort by count
     country_counts.sort(key=lambda x: x[1], reverse=True)
 
-    print("\nTop 10 countries by volcano count:")
+    print("\nTop 10 countries by Holocene volcano count:")
     for country, count in country_counts[:10]:
         print(f"  {country}: {count} volcanoes")
 
@@ -179,7 +182,7 @@ def main():
 
     # Check data completeness
     with_coords = len([v for v in all_volcanoes if v.lat is not None and v.lon is not None])
-    with_elevation = len([v for v in all_volcanoes if v.elevation() is not None])
+    with_elevation = len([v for v in all_volcanoes if v.get_elevation() is not None])
     with_last_eruption = len([v for v in all_volcanoes if v.last_eruption_year is not None])
 
     print(f"Total volcanoes: {len(all_volcanoes)}")
@@ -194,6 +197,9 @@ def main():
     print("# italy_volcs.plot()  # Plot all Italian volcanoes")
     print("# if len(etna_results) > 0:")
     print("#     etna_results[0].plot()  # Plot Mount Etna individually")
+    # italy_volcs.plot()
+    # if len(etna_results) > 0:
+    #     etna_results[0].plot()  # Plot Mount Etna individually
 
     print("\nAll examples completed successfully!")
 

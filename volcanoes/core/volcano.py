@@ -83,7 +83,7 @@ class Volcano:
         """Alias for lon."""
         return self.lon
 
-    def elevation(self, units: str = "m") -> Optional[float]:
+    def get_elevation(self, units: str = "m") -> Optional[float]:
         """Get the elevation in specified units (m or ft)."""
         elev_m = self._data.get('Elevation')
         if elev_m is None:
@@ -97,9 +97,19 @@ class Volcano:
             raise ValueError("Units must be 'm' or 'ft'")
 
     @property
+    def elevation(self) -> Optional[float]:
+        "Get the elevation in m."
+        return self.get_elevation()
+
+    @property
+    def elev(self) -> Optional[float]:
+        """Alias for elevation."""
+        return self.elevation
+
+    @property
     def origin(self) -> Tuple[Optional[float], Optional[float], Optional[float]]:
         """Get (latitude, longitude, elevation_m) as a tuple."""
-        return (self.lat, self.lon, self.elevation())
+        return (self.lat, self.lon, self.get_elevation())
 
     @property
     def last_eruption_year(self) -> Optional[float]:
@@ -203,7 +213,7 @@ class Volcano:
         ax.legend()
 
         # Add basic info
-        info_text = f"Elevation: {self.elevation():.0f}m" if self.elevation() else "Elevation: Unknown"
+        info_text = f"Elevation: {self.get_elevation() :.0f}m" if self.get_elevation() else "Elevation: Unknown"
         if self.last_eruption_year:
             info_text += f"\nLast Eruption: {int(self.last_eruption_year)}"
 
@@ -215,9 +225,36 @@ class Volcano:
 
     def __str__(self) -> str:
         """String representation of the volcano."""
-        elev_str = f"{self.elevation():.0f}m" if self.elevation() else "Unknown"
-        return f"Volcano({self.name}, {self.country}, {elev_str})"
+        elev_str = f"{self.get_elevation() :.0f}m" if self.get_elevation() else "Unknown"
+        return f"Volcano ({self.name}, {self.country}, {elev_str})"
 
     def __repr__(self) -> str:
         """Detailed representation of the volcano."""
         return f"Volcano(id={self.id}, name='{self.name}', country='{self.country}')"
+
+    def _wrap_text(self, text, line_length=80):
+        import textwrap
+        return textwrap.wrap(text, width=line_length)
+
+    def print(self):
+        """
+        AWU (Indonesia) | 267040
+        Location  : 3.689, 125.447, 1318m
+        Region 	  : Sanghihe Volcanic Arc
+        Volc Type : Composite | Stratovolcano
+        Last Known Eruption : 2004 CE
+        Eruptive History:
+        2004 CE :
+        1992 CE :
+        """
+
+        print(f"{self.name.upper()} ({self.country}) | {self.id}")
+        print(f"{self.region}")
+        print(f"({self.lat}, {self.lon}, {self.elev})")
+        print(f"{self.tectonic_setting} | {self.volcano_type}")
+        print(f"{self.major_rock_type}")
+        print(f"Last Known Eruption: {int(self.last_eruption_year)}")
+        print("Geologic Summary:")
+        geo_sum = self._wrap_text(self.geological_summary)
+        [print(" ", line) for line in geo_sum]
+        print()
