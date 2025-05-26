@@ -7,6 +7,9 @@ volcano data analysis tasks.
 """
 
 from volcanoes import GVP
+import matplotlib
+matplotlib.use('TkAgg')  # This might work better in your environment
+
 
 
 def main():
@@ -197,9 +200,9 @@ def main():
     print("# italy_volcs.plot()  # Plot all Italian volcanoes")
     print("# if len(etna_results) > 0:")
     print("#     etna_results[0].plot()  # Plot Mount Etna individually")
-    # italy_volcs.plot()
-    # if len(etna_results) > 0:
-    #     etna_results[0].plot()  # Plot Mount Etna individually
+    italy_volcs.plot()
+    if len(etna_results) > 0:
+        etna_results[0].plot()  # Plot Mount Etna individually
 
     print("\nAll examples completed successfully!")
 
