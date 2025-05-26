@@ -100,9 +100,8 @@ class VolcanoSet:
         fig, ax = plt.subplots(figsize=(12, 8))
 
         # Plot volcanoes
-        colors = plt.cm.Reds([0.7] * len(lats))  # All red triangles
-        ax.scatter(lons, lats, c=colors, s=60, marker='^',
-                   alpha=0.8, edgecolors='darkred', linewidth=0.5)
+        ax.scatter(lons, lats, c="orange", s=60, marker='^',
+                   alpha=0.8, edgecolors='black', linewidth=0.8)
 
         # Set map extent with some padding
         lat_range = max(lats) - min(lats)

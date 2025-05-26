@@ -198,7 +198,8 @@ class Volcano:
         fig, ax = plt.subplots(figsize=(8, 6))
 
         # Plot volcano as a red triangle
-        ax.scatter(self.lon, self.lat, c='red', s=100, marker='^',
+        ax.scatter(self.lon, self.lat, c='orange', s=100, marker='^',
+                   edgecolors="black",
                    label=f'{self.name}', zorder=5)
 
         # Set map extent
@@ -212,13 +213,13 @@ class Volcano:
         ax.set_title(f'{self.name} ({self.country})')
         ax.legend()
 
-        # Add basic info
-        info_text = f"Elevation: {self.get_elevation() :.0f}m" if self.get_elevation() else "Elevation: Unknown"
-        if self.last_eruption_year:
-            info_text += f"\nLast Eruption: {int(self.last_eruption_year)}"
-
-        ax.text(0.02, 0.98, info_text, transform=ax.transAxes,
-                verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+        # # Add basic info
+        # info_text = f"Elevation: {self.get_elevation() :.0f}m" if self.get_elevation() else "Elevation: Unknown"
+        # if self.last_eruption_year:
+        #     info_text += f"\nLast Eruption: {int(self.last_eruption_year)}"
+        #
+        # ax.text(0.02, 0.98, info_text, transform=ax.transAxes,
+        #         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
         plt.tight_layout()
         plt.show()
