@@ -44,8 +44,11 @@ class GVP:
         """Load volcano data from CSV file."""
         volcanoes = []
 
+        # encoding='utf-8-sig'
+
         try:
-            with open(self.csv_path, 'r', encoding='utf-8') as file:
+            # with open(self.csv_path, 'r', encoding='utf-8') as file:
+            with open(self.csv_path, 'r', encoding='utf-8-sig') as file:
                 reader = csv.DictReader(file)
 
                 # Check if we have the expected columns
