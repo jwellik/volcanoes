@@ -8,7 +8,7 @@ volcano data analysis tasks.
 
 from volcanoes import GVP
 import matplotlib
-matplotlib.use('TkAgg')  # This might work better in your environment
+matplotlib.use('TkAgg')  # or 'Qt5Agg', depending on what's available
 
 
 
@@ -73,7 +73,11 @@ def main():
     etna_results = gvp.filter_volcanoes(name="Etna")
     print(f"Found {len(etna_results)} volcanoes with 'Etna' in name")
     etna_results.print()
+    print()
     etna_results[0].print()
+    print()
+    print(etna_results[0].origin)
+    print()
 
 
     # Example 6: Filter by volcano ID
@@ -200,9 +204,13 @@ def main():
     print("# italy_volcs.plot()  # Plot all Italian volcanoes")
     print("# if len(etna_results) > 0:")
     print("#     etna_results[0].plot()  # Plot Mount Etna individually")
-    italy_volcs.plot()
-    if len(etna_results) > 0:
-        etna_results[0].plot()  # Plot Mount Etna individually
+    try:
+        italy_volcs.plot()
+        if len(etna_results) > 0:
+            etna_results[0].plot()  # Plot Mount Etna individually
+    except:
+        print("Error making plots.")
+        pass
 
     print("\nAll examples completed successfully!")
 
