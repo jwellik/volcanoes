@@ -179,7 +179,7 @@ class Volcano:
 
         return R * c
 
-    def plot(self):
+    def simple_plot(self):
         """Plot the volcano on a simple map."""
         try:
             import matplotlib.pyplot as plt
@@ -223,6 +223,56 @@ class Volcano:
 
         plt.tight_layout()
         plt.show()
+
+    def plot(self, extent_km=50.0):
+
+        try:
+            import matplotlib.pyplot as plt
+            import matplotlib.patches as patches
+            import matplotlib.pyplot as plt
+            import cartopy.crs as ccrs
+            from cartopy.io.img_tiles import GoogleTiles
+        except ImportError:
+            print("Matplotlib and Cartopy are required for advanced plotting. Install with: pip install matplotlib")
+            self.simple_plot()
+
+        from obspy.geodetics import kilometers2degrees as km2dd
+        from volcanoes.utils.plotting import get_zoom_level_interpolated
+
+        if self.lat is None or self.lon is None:
+            print(f"Cannot plot {self.name}: missing coordinates")
+            return
+
+        extent_deg = km2dd(extent_km)
+        zoom_level = get_zoom_level_interpolated(extent_km)
+
+        tiler = GoogleTiles(style="satellite")
+        # tiler = GoogleTiles(style="terrain")  # "street" works, "terrain" appears not to work
+        mercator = tiler.crs
+
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1, projection=mercator)
+        ax.set_extent([self.lon - extent_deg, self.lon + extent_deg,
+                       self.lat - extent_deg, self.lat + extent_deg],
+                      crs=ccrs.PlateCarree())
+        ax.add_image(tiler, zoom_level)
+        # ax.coastlines('10m')
+
+        # Plot volcano as a red triangle
+        ax.scatter(self.lon, self.lat, c='orange', s=100, marker='^',
+                   edgecolors="black",
+                   label=f'{self.name}', zorder=5,
+                   transform=ccrs.Geodetic(),
+                   )
+        ax.legend()
+
+        # Axis grid lines
+        gl = ax.gridlines(draw_labels=True)  # JJW
+        gl.top_labels = False  # JJW
+        gl.right_labels = False  # JJW
+        plt.tight_layout()
+
+        plt.savefig("./volcano.png")
 
     def __str__(self) -> str:
         """String representation of the volcano."""

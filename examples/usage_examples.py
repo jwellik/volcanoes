@@ -204,13 +204,9 @@ def main():
     print("# italy_volcs.plot()  # Plot all Italian volcanoes")
     print("# if len(etna_results) > 0:")
     print("#     etna_results[0].plot()  # Plot Mount Etna individually")
-    try:
-        italy_volcs.plot()
-        if len(etna_results) > 0:
-            etna_results[0].plot()  # Plot Mount Etna individually
-    except:
-        print("Error making plots.")
-        pass
+    italy_volcs.plot()
+    if len(etna_results) > 0:
+        etna_results[0].plot()  # Plot Mount Etna individually
 
     print("\nAll examples completed successfully!")
 

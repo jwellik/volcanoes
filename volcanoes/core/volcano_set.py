@@ -77,7 +77,7 @@ class VolcanoSet:
         if limit and len(self._volcanoes) > limit:
             print(f"... and {len(self._volcanoes) - limit} more")
 
-    def plot(self):
+    def simple_plot(self):
         """Plot all volcanoes in the set on a simple map."""
         try:
             import matplotlib.pyplot as plt
@@ -124,6 +124,73 @@ class VolcanoSet:
 
         plt.tight_layout()
         plt.show()
+
+    def plot(self):
+
+        try:
+            import matplotlib.pyplot as plt
+            import matplotlib.patches as patches
+            import matplotlib.pyplot as plt
+            import cartopy.crs as ccrs
+            from cartopy.io.img_tiles import GoogleTiles
+        except ImportError:
+            print("Matplotlib and Cartopy are required for advanced plotting. Install with: pip install matplotlib")
+            self.simple_plot()
+
+        import numpy as np
+        from obspy.geodetics import degrees2kilometers as dd2km
+        from volcanoes.utils.plotting import get_zoom_level_interpolated
+
+        if not self._volcanoes:
+            print("No volcanoes to plot")
+            return
+
+        # Get coordinates of all volcanoes
+        lats = [v.lat for v in self._volcanoes if v.lat is not None]
+        lons = [v.lon for v in self._volcanoes if v.lon is not None]
+
+        if not lats or not lons:
+            print("No volcanoes with valid coordinates to plot")
+            return
+
+        # Set map extent with some padding
+        lat_range = max(lats) - min(lats)
+        lon_range = max(lons) - min(lons)
+        padding = max(lat_range, lon_range) * 0.1
+
+        extent_km = np.maximum(dd2km(lat_range), dd2km(lon_range))
+        zoom_level = get_zoom_level_interpolated(extent_km)
+
+        tiler = GoogleTiles(style="satellite")
+        # tiler = GoogleTiles(style="terrain")  # "street" works, "terrain" appears not to work
+        mercator = tiler.crs
+
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1, projection=mercator)
+        ax.set_extent([min(lons) - padding, max(lons) + padding,
+                       min(lats) - padding, max(lats) + padding],
+                      crs=ccrs.PlateCarree())
+        ax.add_image(tiler, zoom_level)
+        # ax.coastlines('10m')
+
+        # Plot volcanoes
+        ax.scatter(lons, lats, c="orange", s=60, marker='^',
+                   alpha=0.8, edgecolors='black', linewidth=0.8, zorder=5,
+                   transform=ccrs.Geodetic())
+
+        # Axis grid lines
+        gl = ax.gridlines(draw_labels=True)
+        gl.top_labels = False
+        gl.right_labels = False
+        plt.tight_layout()
+
+        # Add country info if all from same country
+        countries = list(set(v.country for v in self._volcanoes))
+        if len(countries) == 1:
+            ax.set_title(f'Volcanoes in {countries[0]} ({len(self._volcanoes)} volcanoes)')
+
+        plt.tight_layout()
+        plt.savefig("./volcano_set.png")
 
     def summary_stats(self) -> dict:
         """Get summary statistics for the volcano set."""
