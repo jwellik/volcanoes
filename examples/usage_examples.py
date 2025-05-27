@@ -8,7 +8,7 @@ volcano data analysis tasks.
 
 from volcanoes import GVP
 import matplotlib
-matplotlib.use('TkAgg')  # or 'Qt5Agg', depending on what's available
+# matplotlib.use('TkAgg')  # or 'Qt5Agg', depending on what's available
 
 
 
