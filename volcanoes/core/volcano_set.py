@@ -58,6 +58,15 @@ class VolcanoSet:
         filtered = [v for v in self._volcanoes if v.distance_to(lat, lon) <= radius_km]
         return VolcanoSet(filtered)
 
+    def get_lats(self):
+        return [v.lat for v in self._volcanoes if v.lat is not None]
+
+    def get_lons(self):
+        return [v.lon for v in self._volcanoes if v.lon is not None]
+
+    def get_elevs(self):
+        return [v.elev for v in self._volcanoes if v.elev is not None]
+
     def print(self, limit: Optional[int] = None):
         """Print information about volcanoes in the set."""
         volcs_to_print = self._volcanoes[:limit] if limit else self._volcanoes
