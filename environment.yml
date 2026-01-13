@@ -1,0 +1,11 @@
+name: gvp
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.7
+  - matplotlib>=3.0.0
+  - requests>=2.25.0
+  - pip
+  - pip:
+    - -e .

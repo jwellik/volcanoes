@@ -6,6 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "matplotlib>=3.0.0",
+        "requests>=2.25.0",
     ],
     extras_require={
         'dev': ['pytest', 'pytest-cov', 'black', 'flake8'],
@@ -17,9 +18,7 @@ setup(
     long_description_content_type="text/markdown",
     python_requires=">=3.7",
     include_package_data=True,
-    package_data={
-        'volcanoes': ['data/*.csv'],
-    },
+    # Note: CSV data files are no longer bundled. Data is downloaded and cached on first use.
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",

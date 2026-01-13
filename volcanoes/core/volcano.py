@@ -13,15 +13,15 @@ class Volcano:
     def _process_data(self):
         """Process and clean the raw data."""
         # Handle unnamed volcanoes
-        if self._data.get('VolcanoName', '').strip().lower() == 'unnamed':
-            self._data['VolcanoName'] = f"Unnamed-{self._data['VolcanoNumber']}"
+        if self._data.get('Volcano_Name', '').strip().lower() == 'unnamed':
+            self._data['Volcano_Name'] = f"Unnamed-{self._data['Volcano_Number']}"
 
         # Convert numeric fields
-        numeric_fields = ['VolcanoNumber', 'LastEruptionYear', 'Latitude', 'Longitude', 'Elevation']
+        numeric_fields = ['Volcano_Number', 'Last_Eruption_Year', 'Latitude', 'Longitude', 'Elevation']
         for field in numeric_fields:
             if field in self._data and self._data[field] != '':
                 try:
-                    if field == 'VolcanoNumber':
+                    if field == 'Volcano_Number':
                         self._data[field] = int(self._data[field])
                     else:
                         self._data[field] = float(self._data[field])
@@ -31,7 +31,7 @@ class Volcano:
     @property
     def volcano_number(self) -> int:
         """Get the volcano number (unique identifier)."""
-        return self._data.get('VolcanoNumber')
+        return self._data.get('Volcano_Number')
 
     @property
     def id(self) -> int:
@@ -41,12 +41,12 @@ class Volcano:
     @property
     def name(self) -> str:
         """Get the volcano name."""
-        return self._data.get('VolcanoName', '')
+        return self._data.get('Volcano_Name', '')
 
     @property
     def volcano_type(self) -> str:
         """Get the volcano type."""
-        return self._data.get('VolcanoType', '')
+        return self._data.get('Primary_Volcano_Type', '')
 
     @property
     def country(self) -> str:
@@ -114,37 +114,37 @@ class Volcano:
     @property
     def last_eruption_year(self) -> Optional[float]:
         """Get the last eruption year."""
-        return self._data.get('LastEruptionYear')
+        return self._data.get('Last_Eruption_Year')
 
     @property
     def geological_summary(self) -> str:
         """Get the geological summary."""
-        return self._data.get('GeologicalSummary', '')
+        return self._data.get('Geological_Summary', '')
 
     @property
     def tectonic_setting(self) -> str:
         """Get the tectonic setting."""
-        return self._data.get('TectonicSetting', '')
+        return self._data.get('Tectonic_Setting', '')
 
     @property
     def geologic_epoch(self) -> str:
         """Get the geologic epoch."""
-        return self._data.get('GeologicEpoch', '')
+        return self._data.get('Geologic_Epoch', '')
 
     @property
     def evidence_category(self) -> str:
         """Get the evidence category."""
-        return self._data.get('EvidenceCategory', '')
+        return self._data.get('Evidence_Category', '')
 
     @property
     def major_rock_type(self) -> str:
         """Get the major rock type."""
-        return self._data.get('MajorRockType', '')
+        return self._data.get('Major_Rock_Type', '')
 
     @property
     def last_update_date(self) -> str:
         """Get the last update date."""
-        return self._data.get('LastUpdateDate', '')
+        return self._data.get('Last_Update_Date', '')
 
     @property
     def remarks(self) -> str:
@@ -229,21 +229,24 @@ class Volcano:
         try:
             import matplotlib.pyplot as plt
             import matplotlib.patches as patches
-            import matplotlib.pyplot as plt
             import cartopy.crs as ccrs
             from cartopy.io.img_tiles import GoogleTiles
         except ImportError:
             print("Matplotlib and Cartopy are required for advanced plotting. Install with: pip install matplotlib")
             self.simple_plot()
+            return
 
-        from obspy.geodetics import kilometers2degrees as km2dd
+        import numpy as np
         from volcanoes.utils.plotting import get_zoom_level_interpolated
 
         if self.lat is None or self.lon is None:
             print(f"Cannot plot {self.name}: missing coordinates")
             return
 
-        extent_deg = km2dd(extent_km)
+        # Convert kilometers to degrees: 1 degree ≈ 111.32 km
+        # For longitude, account for latitude: 1 degree longitude ≈ 111.32 * cos(lat) km
+        lat_rad = np.radians(self.lat)
+        extent_deg = extent_km / (111.32 * np.cos(lat_rad))
         zoom_level = get_zoom_level_interpolated(extent_km)
 
         tiler = GoogleTiles(style="satellite")

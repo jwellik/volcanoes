@@ -1,0 +1,3 @@
+# Requirements for volcanoes package
+matplotlib>=3.0.0
+requests>=2.25.0

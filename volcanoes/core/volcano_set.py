@@ -53,6 +53,19 @@ class VolcanoSet:
         sorted_volcanoes = sorted(self._volcanoes, key=lambda v: v.distance_to(lat, lon))
         return VolcanoSet(sorted_volcanoes)
 
+    def sort_by_elevation(self, reverse: bool = True) -> 'VolcanoSet':
+        """Sort volcanoes by elevation.
+        
+        Args:
+            reverse: If True, sort descending (highest first). If False, sort ascending.
+        """
+        sorted_volcanoes = sorted(
+            self._volcanoes,
+            key=lambda v: v.get_elevation() if v.get_elevation() is not None else float('-inf'),
+            reverse=reverse
+        )
+        return VolcanoSet(sorted_volcanoes)
+
     def within_radius(self, lat: float, lon: float, radius_km: float) -> 'VolcanoSet':
         """Get volcanoes within a radius of a point."""
         filtered = [v for v in self._volcanoes if v.distance_to(lat, lon) <= radius_km]
@@ -139,15 +152,14 @@ class VolcanoSet:
         try:
             import matplotlib.pyplot as plt
             import matplotlib.patches as patches
-            import matplotlib.pyplot as plt
             import cartopy.crs as ccrs
             from cartopy.io.img_tiles import GoogleTiles
         except ImportError:
             print("Matplotlib and Cartopy are required for advanced plotting. Install with: pip install matplotlib")
             self.simple_plot()
+            return
 
         import numpy as np
-        from obspy.geodetics import degrees2kilometers as dd2km
         from volcanoes.utils.plotting import get_zoom_level_interpolated
 
         if not self._volcanoes:
@@ -167,7 +179,12 @@ class VolcanoSet:
         lon_range = max(lons) - min(lons)
         padding = max(lat_range, lon_range) * 0.1
 
-        extent_km = np.maximum(dd2km(lat_range), dd2km(lon_range))
+        # Convert degrees to kilometers: 1 degree ≈ 111.32 km
+        # For longitude, account for latitude: 1 degree longitude ≈ 111.32 * cos(lat) km
+        avg_lat = np.radians(np.mean(lats))
+        lat_range_km = lat_range * 111.32
+        lon_range_km = lon_range * 111.32 * np.cos(avg_lat)
+        extent_km = np.maximum(lat_range_km, lon_range_km)
         zoom_level = get_zoom_level_interpolated(extent_km)
 
         tiler = GoogleTiles(style="satellite")
@@ -215,3 +232,66 @@ class VolcanoSet:
             'max_elevation': max(elevations) if elevations else None,
             'min_elevation': min(elevations) if elevations else None,
         }
+
+    def export_to_csv(self, output_path: str) -> str:
+        """Export volcano data to CSV.
+        
+        Args:
+            output_path: Path to output CSV file
+            
+        Returns:
+            Path to the exported file
+        """
+        import csv
+        
+        with open(output_path, 'w', newline='', encoding='utf-8') as f:
+            if not self._volcanoes:
+                return output_path
+            
+            # Get fieldnames from first volcano
+            fieldnames = list(self._volcanoes[0]._data.keys())
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            for volcano in self._volcanoes:
+                writer.writerow(volcano._data)
+        
+        print(f"Exported {len(self._volcanoes)} volcanoes to CSV: {output_path}")
+        return output_path
+    
+    def export_to_geojson(self, output_path: str) -> str:
+        """Export volcano data to GeoJSON.
+        
+        Args:
+            output_path: Path to output GeoJSON file
+            
+        Returns:
+            Path to the exported file
+        """
+        import json
+        
+        features = []
+        for volcano in self._volcanoes:
+            if volcano.lat is None or volcano.lon is None:
+                continue
+            
+            feature = {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [volcano.lon, volcano.lat]
+                },
+                'properties': volcano._data.copy()
+            }
+            features.append(feature)
+        
+        geojson = {
+            'type': 'FeatureCollection',
+            'features': features
+        }
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(geojson, f, indent=2, ensure_ascii=False)
+        
+        print(f"Exported {len(features)} volcanoes to GeoJSON: {output_path}")
+        return output_path

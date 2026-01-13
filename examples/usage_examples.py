@@ -106,6 +106,7 @@ def main():
         country="Indonesia"
     )
     print(f"Indonesian stratovolcanoes above 3000m: {len(tall_stratovolcanoes)}")
+    tall_stratovolcanoes = tall_stratovolcanoes.sort_by_elevation()
     tall_stratovolcanoes.print()
 
     # Example 8: Elevation-based filtering
@@ -115,6 +116,7 @@ def main():
 
     high_elevation = gvp.filter_volcanoes(min_elevation=3000)
     print(f"Volcanoes above 3000m: {len(high_elevation)}")
+    high_elevation = high_elevation.sort_by_elevation()
     high_elevation.print(limit=10)
 
     # Example 9: Volcano type analysis

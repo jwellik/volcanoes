@@ -172,3 +172,13 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Volcanoes package cache and exports
+.volcanoes_cache/
+*.volcanoes_cache/
+*_volcanoes.csv
+*_volcanoes.geojson
+*_export.csv
+*_export.geojson
+indonesia_volcanoes.csv
+indonesia_volcanoes.geojson
