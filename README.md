@@ -1,6 +1,6 @@
 # GVP VOLCANOES
 
-Unofficial Python package for [Global Volcanism Program, Smithsonian Institution (GVP)](https://volcano.si.edu/). Downloads and caches the most recent version of the GVP Volcanoes of the World (VOTW) database available through the GVP webservices (https://volcano.si.edu/database/webservices.cfm).
+Unofficial Python package for [Global Volcanism Program, Smithsonian Institution (GVP)](https://volcano.si.edu/). Downloads and caches the most recent version of the GVP Volcanoes of the World (VOTW) database available through GVP webservices (https://volcano.si.edu/database/webservices.cfm).
 
 ## Features
 
@@ -333,7 +333,7 @@ print(f"Found {len(vesuvius_eruptions)} eruptions for Vesuvius")
 
 ## Examples
 
-See `examples/new_api_example.py` and `examples/gvp_web_services_example.py` for detailed examples.
+See `examples/download_cache.py`, `examples/usage_examples.py`, and `tests/test_gvp.py` for detailed examples.
 
 ## Development Status
 
