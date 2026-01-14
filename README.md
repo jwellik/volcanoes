@@ -1,6 +1,6 @@
 # GVP VOLCANOES
 
-Unofficial Python package for Global Volcanism Program (GVP). Downloads and caches the most recent version of the GVP Volcanoes of the World (VOTW) database available through the GVP webservices (https://volcano.si.edu/database/webservices.cfm).
+Unofficial Python package for [Global Volcanism Program, Smithsonian Institution (GVP)](https://volcano.si.edu/). Downloads and caches the most recent version of the GVP Volcanoes of the World (VOTW) database available through the GVP webservices (https://volcano.si.edu/database/webservices.cfm).
 
 ## Features
 
